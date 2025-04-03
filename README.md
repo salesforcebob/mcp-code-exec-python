@@ -6,15 +6,15 @@
   - [Manual Deployment](#manual-deployment)
     - [**Set Required Environment Variables from Heroku CLI**](#set-required-environment-variables-from-heroku-cli)
   - [Local Testing](#local-testing)
-    - [SSE](#sse)
-    - [STDIO](#stdio)
+    - [Local SSE](#local-sse)
+    - [Local STDIO](#local-stdio)
       - [1. Example Python STDIO Client](#1-example-python-stdio-client)
       - [2. Direct Calls](#2-direct-calls)
   - [Remote Testing](#remote-testing)
-    - [SSE](#sse-1)
+    - [Remote SSE](#remote-sse)
       - [List Tools](#list-tools)
       - [code\_exec\_python](#code_exec_python)
-    - [STDIO](#stdio-1)
+    - [Remote STDIO](#remote-stdio)
       - [1. Example Python STDIO Client, Running On-Server](#1-example-python-stdio-client-running-on-server)
       - [2. Direct Calls](#2-direct-calls-1)
     - [3. Coming Soon - Heroku MCP Gateway!](#3-coming-soon---heroku-mcp-gateway)
@@ -59,7 +59,7 @@ heroku logs --tail -a $APP_NAME
 ```
 
 ## Local Testing
-### SSE
+### Local SSE
 One-time packages installation:
 ```
 virtualenv venv
@@ -77,9 +77,9 @@ uvicorn src.sse_server:app --reload
 ```
 *Running with --reload is optional, but great for local development*
 
-Next, in a new pane, you can run the same queries as shown in the [SSE](#sse) testing section - just don't set the `MCP_SERVER_URL`, or set it to `export MCP_SERVER_URL=http://localhost:8000/`
+Next, in a new pane, you can run the same queries as shown in the [Remote SSE](#remote-sse) testing section - just don't set the `MCP_SERVER_URL`, or set it to `export MCP_SERVER_URL=http://localhost:8000/`
 
-### STDIO
+### Local STDIO
 There are two ways to easily test out your MCP server in STDIO mode:
 
 #### 1. Example Python STDIO Client
@@ -116,19 +116,19 @@ EOF
 *(Note that the server expects the client to send a shutdown request, so you can stop the connection with CTRL-C)*
 
 ## Remote Testing
-```
+```bash
 export API_KEY=$(heroku config:get API_KEY -a $APP_NAME)
 export MCP_SERVER_URL=$(heroku info -s -a $APP_NAME | grep web_url | cut -d= -f2)
 ```
 
-### SSE
+### Remote SSE
 #### List Tools
 ```bash
 python example_clients/test_sse.py mcp list_tools | jq
 ```
 
 ####  code_exec_python
-*NOTE: this will inentionally NOT work if you have set `STDIO_MODE_ONLY` to `true`.*
+*NOTE: this will intentionally NOT work if you have set `STDIO_MODE_ONLY` to `true`.*
 ```bash
 python example_clients/test_sse.py mcp call_tool --args '{
   "name": "code_exec_python",
@@ -141,12 +141,12 @@ python example_clients/test_sse.py mcp call_tool --args '{
 
 Remember, this will run your local MCP server if `MCP_SERVER_URL` is unset, otherwise it will run against your remote `MCP_SERVER_URL` server.
 
-### STDIO
+### Remote STDIO
 There are two ways to test out your remote MCP server in STDIO mode:
 
 #### 1. Example Python STDIO Client, Running On-Server
 To run against your deployed code, you can run the example client code on your deployed server:
-```
+```bash
 heroku run --app $APP_NAME -- bash -c 'python -m example_clients.test_stdio mcp list_tools | jq'
 ```
 or:
