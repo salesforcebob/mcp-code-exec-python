@@ -18,7 +18,6 @@ API_KEY = get_env_variable("API_KEY")
 # ENV variables with defauls:
 PORT = int(os.environ.get('PORT', 8000))
 WEB_CONCURRENCY = int(os.environ.get('WEB_CONCURRENCY', 1))
-MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "http://localhost:8000/") + 'sse'
 STDIO_MODE_ONLY = os.getenv("STDIO_MODE_ONLY", "false").lower() == "true"
 
 # Local or Not:

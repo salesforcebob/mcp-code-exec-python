@@ -8,7 +8,7 @@ from mcp import ClientSession
 from mcp.client.sse import sse_client
 
 API_KEY=os.environ.get('API_KEY')
-MCP_SERVER_URL=os.environ.get('MCP_SERVER_URL')
+MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "http://localhost:8000/") + 'sse'
 
 async def run(method_name: str, raw_args: str = None):
     """Generalized runner for MCP client methods."""
