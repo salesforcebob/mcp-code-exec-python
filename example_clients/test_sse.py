@@ -1,12 +1,14 @@
 """Spins up a test client to interact with MCP server in SSE-mode."""
+import os
 import asyncio
 import json
 import sys
 from mando import command, main
 from mcp import ClientSession
 from mcp.client.sse import sse_client
-# local
-from src import config
+
+API_KEY=os.environ.get('API_KEY')
+MCP_SERVER_URL=os.environ.get('MCP_SERVER_URL')
 
 async def run(method_name: str, raw_args: str = None):
     """Generalized runner for MCP client methods."""
@@ -16,9 +18,9 @@ async def run(method_name: str, raw_args: str = None):
         raise ValueError(f"Could not parse JSON args: {raw_args}")
 
     # We'll use this for now until MCP solidifies their authentication recommendations, and the MCP package implements!
-    headers = {"Authorization": f"Bearer {config.API_KEY}"}
+    headers = {"Authorization": f"Bearer {API_KEY}"}
 
-    async with sse_client(config.MCP_SERVER_URL, headers=headers) as streams:
+    async with sse_client(MCP_SERVER_URL, headers=headers) as streams:
         async with ClientSession(*streams) as session:
             await session.initialize()
             method = getattr(session, method_name)
