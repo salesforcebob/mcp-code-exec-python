@@ -15,7 +15,7 @@
     - [Remote SSE](#remote-sse)
     - [Remote STDIO](#remote-stdio)
       - [1. Remote STDIO - Example Python STDIO Client, Running On-Server](#1-remote-stdio---example-python-stdio-client-running-on-server)
-      - [2. Remote STDIO - Direct Calls](#2-remote-stdio---direct-calls)
+      - [2. Remote STDIO - Direct Calls to One-Off Dyno](#2-remote-stdio---direct-calls-to-one-off-dyno)
     - [3. Coming Soon - Heroku MCP Gateway!](#3-coming-soon---heroku-mcp-gateway)
 
 ## Automatic Deployment
@@ -162,7 +162,7 @@ python -m example_clients.test_stdio mcp call_tool --args '\''{
 '
 ```
 
-#### 2. Remote STDIO - Direct Calls
+#### 2. Remote STDIO - Direct Calls to One-Off Dyno
 Or, you can also run or simulate a client locally that sends your client-side requests to a one-off dyno:
 
 ```bash
