@@ -1,6 +1,6 @@
 {
     "name": "Heroku MCP Server - Python Code Execution",
-    "description": "Model Context Protocol server to run python code.",
+    "description": "Model Context Protocol server to run Python code.",
     "repository": "https://github.com/heroku-reference-apps/mcp-code-exec-python",
     "env": {
         "API_KEY": {
