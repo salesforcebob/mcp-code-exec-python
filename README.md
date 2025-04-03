@@ -13,19 +13,7 @@
   - [Remote Testing](#remote-testing)
     - [SSE](#sse-1)
       - [List Tools](#list-tools)
-      - [`fetch_webpage_and_markdownify`](#fetch_webpage_and_markdownify)
-      - [`parse_pdf`](#parse_pdf)
-      - [`brave_search`](#brave_search)
-      - [GitHub Tools](#github-tools)
-        - [`fetch_github_code`](#fetch_github_code)
-        - [`fetch_github_readme`](#fetch_github_readme)
-        - [`fetch_github_dir_structure`](#fetch_github_dir_structure)
-      - [`postgres` Tools](#postgres-tools)
-        - [`pg_list_tables`](#pg_list_tables)
-        - [`pg_get_schema`](#pg_get_schema)
-        - [`pg_run_query`](#pg_run_query)
-        - [`pg_describe_table`](#pg_describe_table)
-      - [`docling`](#docling)
+      - [code\_exec\_python](#code_exec_python)
     - [STDIO](#stdio-1)
       - [1. Example Python STDIO Client, Running On-Server](#1-example-python-stdio-client-running-on-server)
       - [2. Direct Calls](#2-direct-calls-1)
@@ -139,91 +127,22 @@ export MCP_SERVER_URL=$(heroku info -s -a $APP_NAME | grep web_url | cut -d= -f2
 python example_clients/test_sse.py mcp list_tools | jq
 ```
 
-#### `fetch_webpage_and_markdownify`
-```bash
-python example_clients/test_sse.py mcp call_tool --args '{"name": "fetch_webpage_and_markdownify", "arguments": {"url": "https://example.com"}}' | jq
-```
-
-#### `parse_pdf`
-```bash
-python example_clients/test_sse.py mcp call_tool --args '{"name": "parse_pdf", "arguments": {"url": "https://www.melbpc.org.au/wp-content/uploads/2017/10/small-example-pdf-file.pdf"}}' | jq
-```
-
-#### `brave_search`
-```bash
-python example_clients/test_sse.py mcp call_tool --args '{"name": "brave_search", "arguments": {"query": "latest AI research", "limit": 3}}' | jq
-```
-
----
-
-#### GitHub Tools
-_Note: currently these need to be public git repos 🥲_
-
-##### `fetch_github_code`
-```bash
-python example_clients/test_sse.py mcp call_tool --args '{"name": "fetch_github_code", "arguments": {"url": "https://github.com/modelcontextprotocol/servers/blob/main/package.json"}}' | jq
-```
-
-##### `fetch_github_readme`
-```bash
-python example_clients/test_sse.py mcp call_tool --args '{"name": "fetch_github_readme", "arguments": {"url": "https://github.com/modelcontextprotocol/servers"}}' | jq
-```
-
-##### `fetch_github_dir_structure`
-```bash
-python example_clients/test_sse.py mcp call_tool --args '{"name": "fetch_github_dir_structure", "arguments": {"url": "https://github.com/modelcontextprotocol/servers"}}' | jq
-```
-
----
-
-#### `postgres` Tools
-
-##### `pg_list_tables`
-```bash
-python example_clients/test_sse.py mcp call_tool --args '{"name": "pg_list_tables", "arguments": {}}' | jq
-```
-
-##### `pg_get_schema`
-```bash
-python example_clients/test_sse.py mcp call_tool --args '{"name": "pg_get_schema", "arguments": {}}' | jq
-```
-
-##### `pg_run_query`
-```bash
-python example_clients/test_sse.py mcp call_tool --args '{"name": "pg_run_query", "arguments": {"query": "SELECT table_name FROM information_schema.tables;"}}' | jq
-```
-
-##### `pg_describe_table`
-```bash
-python example_clients/test_sse.py mcp call_tool --args '{"name": "pg_describe_table", "arguments": {"table_name": "pg_stat_statements"}}' | jq
-```
-
----
-
-#### `docling`
-Docling parses a wide variety of types of documents:
-- PDF Documents: .pdf
-- Microsoft Word Documents: .docx
-- Microsoft PowerPoint Presentations: .pptx
-- Microsoft Excel Spreadsheets: .xlsx
-- HyperText Markup Language Files: .html, .htm
-- Plain Text Files: .txt
-- Markdown Files: .md
-- Comma-Separated Values Files: .csv
-- Extensible Markup Language Files: .xml
-- Rich Text Format Files: .rtf
-- Images: .jpg, .jpeg, .png, .tiff, .bmp
-
-Just submit a URL to the file you wish to be parsed:
+####  code_exec_python
+*NOTE: this will inentionally NOT work if you have set `STDIO_MODE_ONLY` to `true`.*
 
 ```bash
-python example_clients/test_sse.py mcp call_tool --args '{"name": "docling", "arguments": {"url": "https://en.wikipedia.org/wiki/Natural_language_processing"}}' | jq
+heroku run --app $APP_NAME -- bash -c '
+python3 -m example_clients.test_stdio mcp call_tool --args '\''{
+  "name": "code_exec_python",
+  "arguments": {
+    "code": "import numpy as np; print(np.random.rand(50).tolist())",
+    "packages": ["numpy"]
+  }
+}'\''
+' | jq
 
-python example_clients/test_sse.py mcp call_tool --args '{"name": "docling", "arguments": {"url": "https://go.microsoft.com/fwlink/?LinkID=521962"}}' | jq
-
-python example_clients/test_sse.py mcp call_tool --args '{"name": "docling", "arguments": {"url": "https://support.staffbase.com/hc/en-us/article_attachments/360009197031/username.csv"}}' | jq
 ```
-
+Remember, this will run your local MCP server if `MCP_SERVER_URL` is unset, otherwise it will run against your remote `MCP_SERVER_URL` server.
 
 ### STDIO
 There are two ways to test out your remote MCP server in STDIO mode:
@@ -235,7 +154,15 @@ heroku run --app $APP_NAME -- bash -c 'python -m example_clients.test_stdio mcp 
 ```
 or:
 ```
-heroku run --app $APP_NAME -- bash -c 'python -m example_clients.test_stdio mcp list_tools --args \'{"name": "fetch_webpage_and_markdownify", "arguments": {"url": "https://example.com"}}\''
+heroku run --app $APP_NAME -- bash -c '
+python -m example_clients.test_stdio mcp call_tool --args '\''{
+  "name": "code_exec_python",
+  "arguments": {
+    "code": "import numpy as np; print(np.random.rand(50).tolist())",
+    "packages": ["numpy"]
+  }
+}'\'' | jq
+'
 ```
 
 #### 2. Direct Calls

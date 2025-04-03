@@ -2,6 +2,7 @@
 import asyncio
 import json
 import sys
+import os
 from mando import command, main
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
@@ -10,6 +11,8 @@ from mcp.client.stdio import stdio_client
 server_params = StdioServerParameters(
     command="python",
     args=["-m", "src.stdio_server"],
+    # NOTE: you may want to change this depending on what ENV variables you want your LLM to have access to!
+    env=os.environ.copy(),
 )
 
 async def run(method_name: str, raw_args: str = None):
