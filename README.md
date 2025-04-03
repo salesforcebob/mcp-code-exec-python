@@ -129,19 +129,16 @@ python example_clients/test_sse.py mcp list_tools | jq
 
 ####  code_exec_python
 *NOTE: this will inentionally NOT work if you have set `STDIO_MODE_ONLY` to `true`.*
-
 ```bash
-heroku run --app $APP_NAME -- bash -c '
-python3 -m example_clients.test_stdio mcp call_tool --args '\''{
+python example_clients/test_sse.py mcp call_tool --args '{
   "name": "code_exec_python",
   "arguments": {
     "code": "import numpy as np; print(np.random.rand(50).tolist())",
     "packages": ["numpy"]
   }
-}'\''
-' | jq
-
+}' | jq
 ```
+
 Remember, this will run your local MCP server if `MCP_SERVER_URL` is unset, otherwise it will run against your remote `MCP_SERVER_URL` server.
 
 ### STDIO
@@ -150,10 +147,10 @@ There are two ways to test out your remote MCP server in STDIO mode:
 #### 1. Example Python STDIO Client, Running On-Server
 To run against your deployed code, you can run the example client code on your deployed server:
 ```
-heroku run --app $APP_NAME -- bash -c 'python -m example_clients.test_stdio mcp list_tools'
+heroku run --app $APP_NAME -- bash -c 'python -m example_clients.test_stdio mcp list_tools | jq'
 ```
 or:
-```
+```bash
 heroku run --app $APP_NAME -- bash -c '
 python -m example_clients.test_stdio mcp call_tool --args '\''{
   "name": "code_exec_python",
@@ -169,7 +166,7 @@ python -m example_clients.test_stdio mcp call_tool --args '\''{
 Or, you can also run or simulate a client locally that sends your client-side requests to the one-off dynos.
 
 Example code-execution command (installs packages and runs command in an isolated, one-off heroku dyno).
-```
+```bash
 heroku run --app "$APP_NAME" -- bash -c "python -m src.stdio_server 2> logs.txt" <<EOF
 Content-Length: 148
 
@@ -177,30 +174,13 @@ Content-Length: 148
 Content-Length: 66
 
 {"jsonrpc":"2.0","method":"notifications/initialized","params":{}}
-Content-Length: 192
+Content-Length: 205
 
-{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"code_exec","arguments":{"language":"python","code":"import numpy as np; print(np.mean(list(range(10))))","packages":["numpy"]}}}
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"code_exec_python","arguments":{"code":"import numpy as np; print(np.random.rand(50).tolist())","packages":["numpy"]}}}
 EOF
 ```
 
-
-Example fetch_webpage_and_markdownify command:
-
-```
-heroku run --app "$APP_NAME" -- bash -c "python -m src.stdio_server 2> logs.txt" <<EOF
-Content-Length: 148
-
-{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"1.0.0","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}
-Content-Length: 66
-
-{"jsonrpc":"2.0","method":"notifications/initialized","params":{}}
-Content-Length: 140
-
-{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"fetch_webpage_and_markdownify","arguments":{"url":"https://example.com"}}}
-EOF
-```
-
-Again, note that since we're running our request througha single command, we're unable to simulate a client's shutdown request.
+Again, note that since we're running our request through a single command, we're unable to simulate a client's shutdown request.
 
 ### 3. Coming Soon - Heroku MCP Gateway!
 Soon, you'll also be able to connect up your MPC repo to Heroku's MCP Gateway, which will make streaming requests and responses from one-off MCP dynos simple!
