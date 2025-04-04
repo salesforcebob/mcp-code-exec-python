@@ -37,9 +37,12 @@ def install_dependencies(packages: Optional[List[str]], pip_path: str = "pip") -
     cmd = [pip_path, "install"] + packages
     return run_command(cmd)
 
-def run_in_isolated_venv(code: str, packages: Optional[List[str]]) -> Dict[str, Any]:
+def run_in_tempdir(code: str, packages: Optional[List[str]]) -> Dict[str, Any]:
     """
     Runs Python code in a temporary isolated virtual environment.
+
+    Note that this does NOT mean the code is fully isolated or secure - it just means the package installations
+    are isolated.
 
     Args:
         code: The code to run.
@@ -88,7 +91,7 @@ def code_exec_python(code: str, packages: Optional[List[str]] = None, isolated_v
             - 'stderr': Captured standard error or install failure messages.
     """
     if isolated_venv:
-        return run_in_isolated_venv(code, packages)
+        return run_in_tempdir(code, packages)
 
     install_result = install_dependencies(packages)
     if install_result["returncode"] != 0:
