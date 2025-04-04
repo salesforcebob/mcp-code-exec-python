@@ -135,7 +135,6 @@ Content-Length: 205
 {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"code_exec_python","arguments":{"code":"import numpy as np; print(np.random.rand(50).tolist())","packages":["numpy"]}}}
 EOF
 ```
-*(Note that the server expects the client to send a shutdown request, so you can stop the connection with CTRL-C)*
 
 ## Remote Testing
 ```bash
@@ -183,8 +182,6 @@ Content-Length: 205
 {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"code_exec_python","arguments":{"code":"import numpy as np; print(np.random.rand(50).tolist())","packages":["numpy"]}}}
 EOF
 ```
-
-Again, note that since we're running our request through a single command, we're unable to simulate a client's shutdown request.
 
 ### 3. Coming Soon - Heroku MCP Gateway!
 Soon, you'll also be able to connect up your MPC repo to Heroku's MCP Gateway, which will make streaming requests and responses from one-off MCP dynos simple!
