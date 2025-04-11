@@ -37,7 +37,7 @@ def mcp(method_name, args=None):
         This will only work locally:
 
             python example_clients/test_stdio.py mcp list_tools
-            python example_clients/test_stdio.py mcp call_tool --args '{"name": "code_exec", "arguments": {"code_exec": "print(range(10))"}}'
+            python example_clients/test_stdio.py mcp call_tool --args '{"name": "code_exec", "arguments": {"code_exec_python": "print(list(range(10)))"}}'
 
         To run against your deployed code:
 
