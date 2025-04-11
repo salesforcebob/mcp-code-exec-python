@@ -37,26 +37,25 @@ def mcp(method_name, args=None):
         This will only work locally:
 
             python example_clients/test_stdio.py mcp list_tools
-            python example_clients/test_stdio.py mcp call_tool --args '{"name": "fetch_webpage_and_markdownify", "arguments": {"url": "https://example.com"}}'
+            python example_clients/test_stdio.py mcp call_tool --args '{"name": "code_exec", "arguments": {"code_exec": "print(range(10))"}}'
 
         To run against your deployed code:
 
             heroku run --app $APP_NAME -- bash -c 'python -m example_clients.test_stdio mcp list_tools'
-            heroku run --app $APP_NAME -- bash -c 'python -m example_clients.test_stdio mcp call_tool --args \'{"name": "fetch_webpage_and_markdownify", "arguments": {"url": "https://example.com"}}\''
+            
+            json='{"name": "code_exec_python", "arguments": {"code": "print(list(range(10)))"}}'
+            heroku run --app "$APP_NAME" -- bash -c "python -m example_clients.test_stdio mcp call_tool --args '$json'"
 
         Or simulate a raw STDIO client:
 
             heroku run --app "$APP_NAME" -- bash -c "python -m src.stdio_server 2> logs.txt" <<EOF
-            Content-Length: 148
 
-            {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"0.1.0","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}
-            Content-Length: 66
+{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"0.1.0","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}
 
-            {"jsonrpc":"2.0","method":"notifications/initialized","params":{}}
-            Content-Length: 192
+{"jsonrpc":"2.0","method":"notifications/initialized","params":{}}
 
-            {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"code_exec","arguments":{"language":"python","code":"import numpy as np; print(np.mean(list(range(10))))","packages":["numpy"]}}}
-            EOF
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"code_exec_python","arguments":{"code":"import numpy as np; print(np.random.rand(50).tolist())","packages":["numpy"]}}}
+EOF
 
         Soon, you'll also be able to connect up your MPC repo to Heroku's MCP Gateway, which will make streaming from one-off dynos simple!
     """
