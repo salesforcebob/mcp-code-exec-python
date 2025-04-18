@@ -2,7 +2,9 @@ import subprocess
 import os
 import shutil
 import tempfile
-from typing import Optional, Dict, Any, List
+from pydantic import Field
+from typing import Annotated
+from typing import Optional, Dict, Any, List, Dict, Any
 
 def run_command(cmd: List[str]) -> Dict[str, Any]:
     """Executes a command using subprocess and returns output and errors."""
@@ -72,20 +74,28 @@ def run_in_tempdir(code: str, packages: Optional[List[str]]) -> Dict[str, Any]:
     finally:
         shutil.rmtree(temp_dir)
 
+# We use Pydantic Fields here so that the parameter descriptions will flow into the MCP tool schema.
+def code_exec_python(
+    code: Annotated[
+        str,
+        Field(description="The Python code to execute as a string.")
+    ],
+    packages: Annotated[
+        Optional[List[str]],
+        Field(description="Optional list of pip package names to install before execution.")
+    ] = None,
+    isolated_venv: Annotated[
+        bool,
+        Field(description="Use a temporary isolated virtual environment for this run.")
+    ] = False
+) -> Dict[str, Any]:
+    """Executes a Python code snippet with optional pip dependencies.
 
-def code_exec_python(code: str, packages: Optional[List[str]] = None, isolated_venv: bool = False) -> Dict[str, Any]:
-    """
-    Executes a Python code snippet with optional pip dependencies.
-
-    Args:
-        code: The Python code to execute as a string.
-        packages: An optional list of pip package names to install before execution.
-        isolated_venv: Whether to use an isolated virtual environment for this run.
-            Not needed for STDIO mode; recommended but not required for SSE mode,
-            to improve package isolation. Note that it will slow code execution down.
+    The Python3 runtime has access to networking, the filesystem, and the standard library.
+    A non-zero exit code is an error and should be fixed.
 
     Returns:
-        A dictionary containing:
+        JSON containing:
             - 'returncode': Exit status of the execution.
             - 'stdout': Captured standard output.
             - 'stderr': Captured standard error or install failure messages.
