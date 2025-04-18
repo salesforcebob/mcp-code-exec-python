@@ -84,9 +84,9 @@ def code_exec_python(
         Optional[List[str]],
         Field(description="Optional list of pip package names to install before execution.")
     ] = None,
-    isolated_venv: Annotated[
+    use_temp_dir: Annotated[
         bool,
-        Field(description="Use a temporary isolated virtual environment for this run.")
+        Field(description="Use a temporary isolated virtual environment in a tempdir for this run.")
     ] = False
 ) -> Dict[str, Any]:
     """Executes a Python code snippet with optional pip dependencies.
@@ -100,7 +100,7 @@ def code_exec_python(
             - 'stdout': Captured standard output.
             - 'stderr': Captured standard error or install failure messages.
     """
-    if isolated_venv:
+    if use_temp_dir:
         return run_in_tempdir(code, packages)
 
     install_result = install_dependencies(packages)
