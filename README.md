@@ -1,5 +1,5 @@
 
-# Heroku Code Execution for MCP - Python
+# Heroku MCP Code Execution - Python
 
 - [Heroku MCP Code Execution - Python](#heroku-mcp-code-execution---python)
   - [Automatic Deployment](#automatic-deployment)
