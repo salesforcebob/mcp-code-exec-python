@@ -148,17 +148,13 @@ export MCP_SERVER_URL=$(heroku info -s -a $APP_NAME | grep web_url | cut -d= -f2
 ```
 
 ### Remote SSE
-<<<<<<< Updated upstream
 To test your remote `SSE` server, you'll need to make sure a web process is actually spun up. To save on costs, by default this repository doesn't spin up web dynos on creation, as many folks only want to use `STDIO` mode (local and one-off dyno) requests:
 ```
 heroku ps:scale web=1 -a $APP_NAME
 ```
 You only need to do this once, unless you spin back down to 0 web dynos to save on costs (`heroku ps:scale web=0 -a $APP_NAME`). To confirm currently running dynos, use `heroku ps -a $APP_NAME`.
 
-Next, you can run the same queries as shown in the [Local SSE - Example Requests](#local-sse-example-requests) testing section - because you've set `MCP_SERVER_URL`, the client will call out to your deployed server.
-=======
-You can run the same queries as shown in the [Local SSE - Example Requests](#local-sse---example-requests) testing section - because you've set `MCP_SERVER_URL`, the client will call out to your deployed server.
->>>>>>> Stashed changes
+Next, you can run the same queries as shown in the [Local SSE - Example Requests](#local-sse---example-requests) testing section - because you've set `MCP_SERVER_URL`, the client will call out to your deployed server.
 
 ### Remote STDIO
 There are two ways to test out your remote MCP server in STDIO mode:
