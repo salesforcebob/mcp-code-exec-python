@@ -36,7 +36,7 @@ heroku buildpacks:set heroku/python -a $APP_NAME
 heroku config:set API_KEY=$(openssl rand -hex 32) -a $APP_NAME
 heroku config:set STDIO_MODE_ONLY=<true/false> -a $APP_NAME
 ```
-*Note: we recommend setting `STDIO_MODE_ONLY` to `true` for security and code execution isolation security.*
+*Note: we recommend setting `STDIO_MODE_ONLY` to `true` for security and code execution isolation security in non-dev environments.*
 
 If you *only* want local & deployed `STDIO` capabilities (no `SSE server`), run:
 ```
@@ -152,9 +152,9 @@ To test your remote `SSE` server, you'll need to make sure a web process is actu
 ```
 heroku ps:scale web=1 -a $APP_NAME
 ```
-You only need to do this once, unless you spin back down to 0 web dynos to save on costs (`heroku ps:scale web=0 -a $APP_NAME`).
+You only need to do this once, unless you spin back down to 0 web dynos to save on costs (`heroku ps:scale web=0 -a $APP_NAME`). To confirm currently running dynos, use `heroku ps -a $APP_NAME`.
 
-You can run the same queries as shown in the [Local SSE - Example Requests](#local-sse-example-requests) testing section - because you've set `MCP_SERVER_URL`, the client will call out to your deployed server.
+Next, you can run the same queries as shown in the [Local SSE - Example Requests](#local-sse-example-requests) testing section - because you've set `MCP_SERVER_URL`, the client will call out to your deployed server.
 
 ### Remote STDIO
 There are two ways to test out your remote MCP server in STDIO mode:

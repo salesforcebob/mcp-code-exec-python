@@ -11,6 +11,10 @@
         "WEB_CONCURRENCY": {
             "description": "Number of Uvicorn worker processes to launch (leave at 1 for async SSE server)",
             "value": "1"
+        },
+        "STDIO_MODE_ONLY": {
+            "description": "Only allow tool requests via STDIO mode?",
+            "value": false
         }
     },
     "formation": [
