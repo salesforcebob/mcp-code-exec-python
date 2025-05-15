@@ -1,6 +1,15 @@
-*MAGIC*
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://www.heroku.com/deploy?template=https://github.com/heroku/mcp-code-exec-python)
+*LOOKIT, MAGIC*
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://www.heroku.com/deploy?template=https://github.com/heroku/mcp-code-exec-python)
+```bash
+heroku git:remote -a $APP_NAME
+```
+
+Actually spin up a web server (does cost $, so not the repo default):
+```bash
+heroku ps:scale web=1 -a $APP_NAME
+heroku config:set WEB_CONCURRENCY=1 -a $APP_NAME
+```
 
 ## Local STDIO
 There are two ways to easily test out your MCP server in STDIO mode:
@@ -34,7 +43,6 @@ cat <<EOF | python -m src.stdio_server
 {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"code_exec_python","arguments":{"code":"import numpy as np; print(np.random.rand(50).tolist())","packages":["numpy"]}}}
 EOF
 ```
-*(Note that the server expects the client to send a shutdown request, so you can stop the connection with CTRL-C)*
 
 
 ## Local SSE
