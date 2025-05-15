@@ -106,6 +106,8 @@ Next, you can run the same queries as shown in the [Local SSE - Example Requests
 --> Solution?
 [Working With MCP On Heroku](https://devcenter.heroku.com/articles/heroku-inference-working-with-mcp)
 ```bash
+heroku plugins:install @heroku/plugin-ai
+
 heroku ai:models:create claude-3-7-sonnet -a $APP_NAME
 heroku config -a $APP_NAME
 
