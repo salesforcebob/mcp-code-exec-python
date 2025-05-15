@@ -8,7 +8,6 @@ heroku git:remote -a $APP_NAME
 Actually spin up a web server (does cost $, so not the repo default):
 ```bash
 heroku ps:scale web=1 -a $APP_NAME
-heroku config:set WEB_CONCURRENCY=1 -a $APP_NAME
 ```
 
 ## Local STDIO
