@@ -36,7 +36,7 @@ heroku buildpacks:set heroku/python -a $APP_NAME
 heroku config:set API_KEY=$(openssl rand -hex 32) -a $APP_NAME
 heroku config:set STDIO_MODE_ONLY=<true/false> -a $APP_NAME
 # set the remote server type (module) that your web process will use (only relevant for web deployments)
-heroku config:set REMOTE_SERVER_TYPE=<streamable_http_server/sse_server>
+heroku config:set REMOTE_SERVER_TRANSPORT_MODULE=<streamable_http_server/sse_server>
 ```
 *Note: we recommend setting `STDIO_MODE_ONLY` to `true` for security and code execution isolation security in non-dev environments.*
 
@@ -157,7 +157,7 @@ You only need to do this once, unless you spin back down to 0 web dynos to save 
 
 By default, this app deploys a Streamable HTTP MCP server - if you want to deploy an SSE server, run:
 ```bash
-heroku config:set REMOTE_SERVER_TYPE=sse_server
+heroku config:set REMOTE_SERVER_TRANSPORT_MODULE=sse_server
 ```
 Which will affect which server is run in the Procfile.
 

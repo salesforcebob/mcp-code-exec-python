@@ -9,7 +9,7 @@ These pytest tests run **every MCP transport** this repo supports, both locally 
 | `http_local`      | Streamable HTTP on `localhost:8000/mcp/`                  | — |
 | `sse_local`       | SSE on `localhost:8000/mcp/sse`                           | — |
 | `stdio_local`     | STDIO (example client boots its own server)               | — |
-| `remote`          | Transport named in **`$REMOTE_SERVER_TYPE`**&nbsp;(`streamable_http_server` or `sse_server`) served by your web dyno | **Yes** |
+| `remote`          | Transport named in **`$REMOTE_SERVER_TRANSPORT_MODULE`**&nbsp;(`streamable_http_server` or `sse_server`) served by your web dyno | **Yes** |
 | `remote_stdio`    | STDIO via a **one-off Heroku dyno**                       | **No** – works even at `web=0` |
 
 *If the web dyno is asleep or scaled to `0`, the `remote` tests auto-skip.
