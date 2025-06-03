@@ -35,6 +35,8 @@ heroku buildpacks:set heroku/python -a $APP_NAME
 # set a private API key that you create, for example:
 heroku config:set API_KEY=$(openssl rand -hex 32) -a $APP_NAME
 heroku config:set STDIO_MODE_ONLY=<true/false> -a $APP_NAME
+# set the remote server type (module) that your web process will use (only relevant for web deployments)
+heroku config:set REMOTE_SERVER_TYPE=<streamable_http_server/sse_server>
 ```
 *Note: we recommend setting `STDIO_MODE_ONLY` to `true` for security and code execution isolation security in non-dev environments.*
 
@@ -75,14 +77,14 @@ pip install -r requirements.txt
 ```
 
 ### Local Streamable HTTP, SSE
-If you're testing Streamable HTTP OR SSE, in one terminal pane you'll need to start the server:
+If you're testing (stateless) Streamable HTTP OR SSE, in one terminal pane you'll need to start the server:
 ```bash
 source venv/bin/activate
 export API_KEY=$(heroku config:get API_KEY -a $APP_NAME)
 # Either run src.streamable_http_server or src.sse_server, here:
 uvicorn src.streamable_http_server:app --reload
 ```
-*Running with --reload is optional, but great for local development*
+*Running with `--reload` is optional, but great for local development*
 
 Next, in a new pane, you can try running some queries against your server:
 #### Local Streamable HTTP, SSE - Example Requests

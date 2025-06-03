@@ -19,7 +19,6 @@ async def run(method_name: str, raw_args: str = None):
 
     headers = {"Authorization": f"Bearer {API_KEY}"}
 
-    # Proper unpacking: don't treat the 3rd item as part of the session
     async with streamablehttp_client(MCP_SERVER_URL, headers=headers) as (read_stream, write_stream, get_session_id):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
