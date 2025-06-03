@@ -1,90 +1,94 @@
-import asyncio, os, subprocess, shlex, pytest
+"""
+All transports tested, relying *only* on Hillary’s example clients.
+
+Contexts yielded:
+    • http_local      – streamable HTTP on :8000
+    • sse_local       – SSE app on :8000  (same port; we stop the HTTP one first)
+    • stdio_local     – client boots its own server
+    • remote          – hits your Heroku app if MCP_SERVER_URL & API_KEY are set
+"""
+
+from __future__ import annotations
+import asyncio
+import os
+import subprocess
+import sys
 from pathlib import Path
+from typing import AsyncGenerator, Dict
 
-ROOT        = Path(__file__).resolve().parents[1]
-API_KEY     = os.getenv("API_KEY", "local-test-key")
-WAIT_SECS   = 15         # generous for CI
+import pytest
 
-# ------------------------------------------------------------------ helpers
-async def _wait_port(port: int, proc: subprocess.Popen[str], timeout: int = WAIT_SECS):
-    """
-    Poll a TCP port until it opens.
-    If the server dies first, dump its stdout/stderr so you can read the traceback.
-    """
-    deadline = asyncio.get_event_loop().time() + timeout
-    while asyncio.get_event_loop().time() < deadline:
+ROOT = Path(__file__).resolve().parents[1]
+PY = sys.executable
+API_KEY = os.getenv("API_KEY", "local-test-key")
+PORT = 8000                # ⬅️  matches your hand-rolled examples
+WAIT = 15                  # seconds
+
+
+# ---------------------------------------------------------------- helpers
+async def _wait_until_up(timeout: int = WAIT) -> None:
+    for _ in range(timeout * 4):
         try:
-            reader, _ = await asyncio.open_connection("127.0.0.1", port)
-            reader.close()
+            reader, writer = await asyncio.open_connection("127.0.0.1", PORT)
+            writer.close(); await writer.wait_closed()
             return
-        except Exception:
+        except OSError:
             await asyncio.sleep(0.25)
+    raise RuntimeError("Timed-out waiting for 127.0.0.1:8000")
 
-    # Timed-out: capture whatever the server printed and raise
-    proc.terminate()
-    _ = proc.wait()
-    output = proc.stdout.read() if proc.stdout else ""
-    raise RuntimeError(
-        f"Timed out waiting for 127.0.0.1:{port}\n\n--- server output ---\n{output}"
-    )
 
-def _start_uvicorn(import_path: str, port: int) -> subprocess.Popen[str]:
-    env = os.environ | {"API_KEY": API_KEY, "PYTHONPATH": str(ROOT)}
-    return subprocess.Popen(
-        shlex.split(f"uvicorn {import_path} --port {port} --no-access-log"),
-        cwd=ROOT,
-        env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-    )
+def _spawn(app_module: str) -> subprocess.Popen[str]:
+    """Run uvicorn in its own process pointing at the given module:app."""
+    env = os.environ.copy() | {"API_KEY": API_KEY, "PYTHONPATH": str(ROOT)}
+    cmd = [PY, "-m", "uvicorn", f"{app_module}:app", "--port", str(PORT), "--no-access-log"]
+    return subprocess.Popen(cmd, cwd=ROOT, env=env,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
-# ------------------------------------------------------------------ contexts
-async def ctx_http_local():
-    proc = _start_uvicorn("src.streamable_http_server:app", 8001)
+
+# ---------------------------------------------------------------- local ctx factories
+async def _ctx_http_local() -> AsyncGenerator[Dict, None]:
+    proc = _spawn("src.streamable_http_server")
     try:
-        await _wait_port(8001, proc)
-        yield {
-            "client":    "streamable_http_client",
-            "extra_env": {"API_KEY": API_KEY, "MCP_SERVER_URL": "http://127.0.0.1:8001"},
-        }
+        await _wait_until_up()
+        yield {"client": "streamable_http_client",
+               "extra_env": {"API_KEY": API_KEY, "MCP_SERVER_URL": f"http://127.0.0.1:{PORT}"}}
     finally:
         proc.terminate(); proc.wait()
 
 
-async def ctx_sse_local():
-    proc = _start_uvicorn("src.sse_server:app", 8002)
+async def _ctx_sse_local() -> AsyncGenerator[Dict, None]:
+    proc = _spawn("src.sse_server")        # same port; previous proc already gone
     try:
-        await _wait_port(8002, proc)
-        yield {
-            "client":    "sse_client",
-            "extra_env": {"API_KEY": API_KEY, "MCP_SERVER_URL": "http://127.0.0.1:8002"},
-        }
+        await _wait_until_up()
+        # trailing slash required so client appends “sse” cleanly
+        yield {"client": "sse_client",
+               "extra_env": {"API_KEY": API_KEY, "MCP_SERVER_URL": f"http://127.0.0.1:{PORT}/"}}
     finally:
         proc.terminate(); proc.wait()
 
 
-async def ctx_stdio_local():
+async def _ctx_stdio_local() -> AsyncGenerator[Dict, None]:
     yield {"client": "stdio_client", "extra_env": {}}
 
-async def ctx_remote():
-    url, key = os.getenv("MCP_SERVER_URL"), os.getenv("API_KEY")
-    if not url or not key:
-        pytest.skip("remote env vars missing")
-    yield {
-        "client":    "streamable_http_client",
-        "extra_env": {"API_KEY": key, "MCP_SERVER_URL": url.rstrip("/")},
-    }
 
-# ------------------------------------------------------------------ fixture
-_FIX = {
-    "http_local" : ctx_http_local,
-    "sse_local"  : ctx_sse_local,
-    "stdio_local": ctx_stdio_local,
-    "remote"     : ctx_remote,
+# ---------------------------------------------------------------- remote ctx
+async def _ctx_remote() -> AsyncGenerator[Dict, None]:
+    url = os.getenv("MCP_SERVER_URL"); key = os.getenv("API_KEY")
+    if not url or not key:
+        pytest.skip("remote env-vars missing")
+    yield {"client": "streamable_http_client",
+           "extra_env": {"API_KEY": key, "MCP_SERVER_URL": url.rstrip("/")}}
+
+
+CONTEXTS = {
+    "http_local":  _ctx_http_local,
+    "sse_local":   _ctx_sse_local,
+    "stdio_local": _ctx_stdio_local,
+    "remote":      _ctx_remote,
 }
 
-@pytest.fixture(params=_FIX, ids=list(_FIX))
+# ---------------------------------------------------------------- public fixture
+@pytest.fixture(params=CONTEXTS, ids=list(CONTEXTS))
 async def ctx(request):
-    async for c in _FIX[request.param]():
+    async for c in CONTEXTS[request.param]():
         yield c
