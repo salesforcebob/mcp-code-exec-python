@@ -1,5 +1,5 @@
 """
-All transports tested, relying *only* on Hillary’s example clients.
+All transports tested
 
 Contexts yielded:
     • http_local      – streamable HTTP on :8000
