@@ -71,7 +71,7 @@ async def _ctx_stdio_local() -> AsyncGenerator[Dict, None]:
     yield {"client": "stdio_client", "extra_env": {}}
 
 
-# ---------------------------------------------------------------- remote ctx
+# ---------------------------------------------------------------- remote HTTP / SSE
 async def _ctx_remote() -> AsyncGenerator[Dict, None]:
     url = os.getenv("MCP_SERVER_URL"); key = os.getenv("API_KEY")
     if not url or not key:
@@ -79,12 +79,21 @@ async def _ctx_remote() -> AsyncGenerator[Dict, None]:
     yield {"client": "streamable_http_client",
            "extra_env": {"API_KEY": key, "MCP_SERVER_URL": url.rstrip("/")}}
 
+# ---------------------------------------------------------------- remote STDIO ctx
+async def _ctx_remote_stdio() -> AsyncGenerator[Dict, None]:
+    app = os.getenv("APP_NAME"); key = os.getenv("API_KEY")
+    if not app or not key:
+        pytest.skip("APP_NAME or API_KEY env-var missing for remote stdio")
+    # one-off dyno will pick up API_KEY from Heroku config; no MCP_SERVER_URL needed
+    yield {"client": "remote_stdio", "extra_env": {"API_KEY": key, "APP_NAME": app}}
+
 
 CONTEXTS = {
-    "http_local":  _ctx_http_local,
-    "sse_local":   _ctx_sse_local,
-    "stdio_local": _ctx_stdio_local,
-    "remote":      _ctx_remote,
+    "http_local":   _ctx_http_local,
+    "sse_local":    _ctx_sse_local,
+    "stdio_local":  _ctx_stdio_local,
+    "remote":       _ctx_remote,
+    "remote_stdio": _ctx_remote_stdio,
 }
 
 # ---------------------------------------------------------------- public fixture

@@ -20,6 +20,10 @@ def _extract_stdout(blob: str) -> str | None:
     This returns the inner 'stdout' value or None.
     """
     try:
+        if not blob.lstrip().startswith("{"):
+            # to remove INFO log lines
+            blob = blob[blob.index("{") :]
+
         outer = json.loads(blob)
         if isinstance(outer, dict) and outer.get("content"):
             inner = json.loads(outer["content"][0]["text"])

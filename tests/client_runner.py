@@ -19,30 +19,35 @@ async def call_client(
 ) -> str:
     env = os.environ.copy() | (extra_env or {})
 
-    cmd = [
-        PYTHON_EXE,
-        "-m",
-        f"example_clients.{module_name}",
-        "mcp",
-        *cli_args,
-    ]
+    # ----- NEW: run STDIO client inside a Heroku one-off dyno ----------
+    if module_name == "remote_stdio":
+        app = env.get("APP_NAME")
+        if not app:
+            raise RuntimeError("APP_NAME env-var required for remote_stdio context")
+        cmd = [
+            "heroku", "run", "--exit-code", "--app", app, "--",
+            "python", "-m", "example_clients.stdio_client", "mcp", *cli_args,
+        ]
+    # -------------------------------------------------------------------
+    else:
+        cmd = [
+            PYTHON_EXE,
+            "-m", f"example_clients.{module_name}",
+            "mcp", *cli_args,
+        ]
 
     proc = await asyncio.create_subprocess_exec(
-        *cmd,
-        cwd=ROOT,
-        env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        *cmd, cwd=ROOT, env=env,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     out_b, err_b = await proc.communicate()
-    out = out_b.decode()
-    err = err_b.decode()
+    out, err = out_b.decode(), err_b.decode()
     if proc.returncode:
         raise RuntimeError(
             textwrap.dedent(
-                f"""\
+                f"""
                 Client {module_name} exited with {proc.returncode}
-                CMD   : {" ".join(cmd)}
+                CMD   : {' '.join(cmd)}
                 STDERR:
                 {err}"""
             )
