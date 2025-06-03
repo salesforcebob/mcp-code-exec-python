@@ -1,6 +1,5 @@
 """
 Launch one of the example_clients in a fresh subprocess and return STDOUT.
-This avoids Mando’s global sub-parser registration conflicts.
 """
 from __future__ import annotations
 import asyncio, os, sys, subprocess, textwrap

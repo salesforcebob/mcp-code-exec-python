@@ -5,7 +5,7 @@ Contexts yielded:
     • http_local      – streamable HTTP on :8000
     • sse_local       – SSE app on :8000  (same port; we stop the HTTP one first)
     • stdio_local     – client boots its own server
-    • remote          – hits your Heroku app if MCP_SERVER_URL & API_KEY are set
+    • remote          – hits your Heroku app (either streamable http or SSE) if MCP_SERVER_URL & API_KEY are set
 """
 
 from __future__ import annotations
@@ -21,8 +21,8 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 PY = sys.executable
 API_KEY = os.getenv("API_KEY", "local-test-key")
-PORT = 8000                # ⬅️  matches your hand-rolled examples
-WAIT = 15                  # seconds
+PORT = 8000
+WAIT = 25 # seconds
 
 
 # ---------------------------------------------------------------- helpers
