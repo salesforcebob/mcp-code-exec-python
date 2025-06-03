@@ -1,6 +1,8 @@
-# 🧪 End-to-End Test Suite (`tests/`)
+# End-to-End Test Suite (`tests/`)
 
-The pytest harness here exercises **every MCP transport** your repo supports, both locally and (optionally) against a deployed Heroku app.
+You know what's better than unit tests? End to end integration tests.
+
+These pytest tests run **every MCP transport** this repo supports, both locally and (optionally) against a deployed Heroku app.
 
 | Context ID        | Transport exercised                                       | Needs running **web** dyno? |
 |-------------------|-----------------------------------------------------------|-----------------------------|
