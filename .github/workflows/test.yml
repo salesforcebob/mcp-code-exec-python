@@ -2,7 +2,7 @@ name: MCP Tests
 
 on:
   push:
-    branches: [main]
+    branches:
   pull_request:
 
 jobs:
