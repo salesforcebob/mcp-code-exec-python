@@ -81,9 +81,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Get Heroku app URL
+        id: heroku_url
+        run: |
+          url=$(heroku info -s -a $APP_NAME | grep web_url | cut -d= -f2 | tr -d '\n')
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
       - name: Run pytest against deployed app
         env:
-          MCP_SERVER_URL: https://${{ env.APP_NAME }}.herokuapp.com
+          MCP_SERVER_URL: ${{ steps.heroku_url.outputs.url }}
           API_KEY: ${{ env.API_KEY }}
         run: pytest -q
 
