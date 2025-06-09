@@ -34,6 +34,11 @@ jobs:
 
   ###########################################################################
   # 2 - Remote smoke-test (skipped if ENV vars are missing)
+  #
+  #    • Put MCP_SERVER_URL  → “https://<app>.herokuapp.com”
+  #    • Put API_KEY         → same key you set as Heroku config var
+  #
+  #    The fixture auto-skips the remote case if these are missing, so
   ###########################################################################
   remote:
     runs-on: ubuntu-latest
