@@ -40,6 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      # TODO: make this into a github secret, just in case
       API_KEY: ci-test-key
       APP_NAME: mcp-toolkit-pr-${{ github.event.number }}
 
@@ -83,6 +84,7 @@ jobs:
       - name: Run pytest against deployed app
         env:
           MCP_SERVER_URL: https://${{ env.APP_NAME }}.herokuapp.com
+          API_KEY: ${{ env.API_KEY }}
         run: pytest -q
 
       - name: Destroy Heroku app after test
