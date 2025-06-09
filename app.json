@@ -19,6 +19,10 @@
         "REMOTE_SERVER_TRANSPORT_MODULE": {
             "description": "Tranport module name used for deployed web app (applicable when web formation size is >0). `streamable_http_server` or `sse_server`.",
             "value": "streamable_http_server"
+        },
+        "USE_TEMP_DIR": {
+           "description": "Run Python code in a temporary virtualenv (not a sandbox, but does isolate packages).",
+            "value": "false"
         }
     },
     "formation": [
