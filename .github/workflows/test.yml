@@ -61,7 +61,7 @@ jobs:
 
       - name: Deploy this branch to Heroku
         run: |
-          git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$APP_NAME.git HEAD:main --force
+          git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$APP_NAME.git HEAD:refs/heads/main --force
 
       - uses: actions/setup-python@v5
         with:
