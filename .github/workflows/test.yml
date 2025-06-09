@@ -9,10 +9,12 @@ jobs:
   ###########################################################################
   local:
     runs-on: ubuntu-latest
+    # Dummy key lets the clients authenticate against the local servers.
     env:
       API_KEY: ci-test-key
 
     steps:
+      # Optional: cache wheels to speed up numpy / scipy installs
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
@@ -72,6 +74,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # We reuse the *same* test-suite; the fixture detects MCP_SERVER_URL
       - name: Run pytest (remote smoke)
         if: env.SHOULD_RUN_REMOTE == 'true'
         run: pytest -q
