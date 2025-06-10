@@ -87,6 +87,9 @@ jobs:
           url=$(heroku info -s -a $APP_NAME | grep web_url | cut -d= -f2 | tr -d '\n')
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
+      - name: Wait briefly for MCP server to fully boot
+        run: sleep 3
+
       - name: Run pytest against deployed app
         env:
           MCP_SERVER_URL: ${{ steps.heroku_url.outputs.url }}
