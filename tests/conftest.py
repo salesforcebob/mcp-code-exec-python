@@ -15,7 +15,7 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import AsyncGenerator, Dict
-import httpx
+
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -71,34 +71,17 @@ async def _ctx_stdio_local() -> AsyncGenerator[Dict, None]:
     yield {"client": "stdio_client", "extra_env": {}}
 
 
-async def _wait_until_remote_ready(url: str, timeout: int = 30):
-    for _ in range(timeout * 4):
-        try:
-            async with httpx.AsyncClient() as client:
-                resp = await client.get(url)
-                if resp.status_code == 200:
-                    return
-        except Exception:
-            pass
-        await asyncio.sleep(0.25)
-    raise RuntimeError(f"Timed out waiting for remote MCP server at {url}")
-
-
 # ---------------------------------------------------------------- remote HTTP / SSE
-# TODO: unhard-code client
 async def _ctx_remote() -> AsyncGenerator[Dict, None]:
     url = os.getenv("MCP_SERVER_URL")
     key = os.getenv("API_KEY")
+    server_type = os.getenv("REMOTE_SERVER_TYPE")
+
     if not url or not key:
         pytest.skip("remote env-vars missing")
-    await _wait_until_remote_ready(url)  # <-- ADD THIS
-    yield {
-        "client": "streamable_http_client",
-        "extra_env": {
-            "API_KEY": key,
-            "MCP_SERVER_URL": url.rstrip("/")
-        },
-    }
+    yield {"client": server_type.replace("server", "client"),
+           "extra_env": {"API_KEY": key, "MCP_SERVER_URL": url, "REMOTE_SERVER_TYPE": server_type}}
+
 # ---------------------------------------------------------------- remote STDIO ctx
 async def _ctx_remote_stdio() -> AsyncGenerator[Dict, None]:
     app = os.getenv("APP_NAME"); key = os.getenv("API_KEY")
