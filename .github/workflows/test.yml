@@ -82,7 +82,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Wait briefly for MCP server to fully boot
-        run: sleep 10
+        run: sleep 30
 
       - name: Get Heroku app URL
         id: heroku_url
