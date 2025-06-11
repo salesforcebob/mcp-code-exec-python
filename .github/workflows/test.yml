@@ -84,7 +84,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Wait briefly for MCP server to fully boot
-        run: sleep 3
+        run: sleep 30
 
       - name: Get Heroku env vars
         id: heroku_env
@@ -99,10 +99,12 @@ jobs:
           REMOTE_SERVER_TYPE: ${{ env.REMOTE_SERVER_TYPE }}
           API_KEY: ${{ env.API_KEY }}
         run: |
-          pytest -q
-          echo "API_KEY is ${API_KEY:+set}"  # won't print the key, just confirms it's non-empty
+          echo "APP_NAME = $APP_NAME"
           echo "MCP_SERVER_URL = $MCP_SERVER_URL"
           echo "REMOTE_SERVER_TYPE = $REMOTE_SERVER_TYPE"
+          echo "API_KEY is ${API_KEY:+set}"  # won't print the key, just confirms it's non-empty
+          pytest -q
+
 
       - name: Destroy Heroku app after test
         if: always()
