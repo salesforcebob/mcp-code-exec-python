@@ -82,22 +82,20 @@ jobs:
           pip install -r requirements.txt
 
       - name: Wait briefly for MCP server to fully boot
-        run: sleep 30
+        run: sleep 3
 
-      - name: Get Heroku app URL
-        id: heroku_url
+      - name: Get Heroku env vars
+        id: heroku_env
         run: |
           url=$(heroku info -s -a $APP_NAME | grep web_url | cut -d= -f2 | tr -d '\n')
           echo "url=$url" >> "$GITHUB_OUTPUT"
-
-      - name: Debug env
-        run: |
-            echo "API_KEY is ${API_KEY:+set}"  # won't print the key, just confirms it's non-empty
-            echo "MCP_SERVER_URL = $MCP_SERVER_URL"
+          server_type=$(heroku config:get REMOTE_SERVER_TYPE -a $APP_NAME)
+          echo "server_type=$server_type" >> "$GITHUB_OUTPUT"
 
       - name: Run pytest against deployed app
         env:
-          MCP_SERVER_URL: ${{ steps.heroku_url.outputs.url }}
+          MCP_SERVER_URL: ${{ steps.heroku_env.outputs.url }}
+          REMOTE_SERVER_TYPE: ${{ steps.heroku_env.outputs.server_type }}
           API_KEY: ${{ env.API_KEY }}
         run: pytest -q
 
