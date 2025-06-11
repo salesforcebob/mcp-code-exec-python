@@ -43,6 +43,7 @@ jobs:
       # TODO: make this into a github secret, just in case
       API_KEY: ci-test-key
       APP_NAME: mcp-toolkit-pr-${{ github.event.number }}
+      REMOTE_SERVER_TYPE: streamable_http_server
 
     steps:
       - uses: actions/checkout@v4
@@ -61,6 +62,7 @@ jobs:
         run: |
           heroku create $APP_NAME
           heroku config:set API_KEY=$API_KEY --app $APP_NAME
+          heroku config:set REMOTE_SERVER_TYPE=$REMOTE_SERVER_TYPE --app $APP_NAME
 
       - name: Deploy this branch to Heroku
         run: |
@@ -89,15 +91,18 @@ jobs:
         run: |
           url=$(heroku info -s -a $APP_NAME | grep web_url | cut -d= -f2 | tr -d '\n')
           echo "url=$url" >> "$GITHUB_OUTPUT"
-          server_type=$(heroku config:get REMOTE_SERVER_TYPE -a $APP_NAME)
-          echo "server_type=$server_type" >> "$GITHUB_OUTPUT"
 
       - name: Run pytest against deployed app
         env:
+          APP_NAME: ${{ env.APP_NAME }}
           MCP_SERVER_URL: ${{ steps.heroku_env.outputs.url }}
-          REMOTE_SERVER_TYPE: ${{ steps.heroku_env.outputs.server_type }}
+          REMOTE_SERVER_TYPE: ${{ env.REMOTE_SERVER_TYPE }}
           API_KEY: ${{ env.API_KEY }}
-        run: pytest -q
+        run: |
+          pytest -q
+          echo "API_KEY is ${API_KEY:+set}"  # won't print the key, just confirms it's non-empty
+          echo "MCP_SERVER_URL = $MCP_SERVER_URL"
+          echo "REMOTE_SERVER_TYPE = $REMOTE_SERVER_TYPE"
 
       - name: Destroy Heroku app after test
         if: always()
