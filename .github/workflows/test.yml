@@ -99,6 +99,7 @@ jobs:
         #   REMOTE_SERVER_TYPE: ${{ env.REMOTE_SERVER_TYPE }}
         #   API_KEY: ${{ env.API_KEY }}
         run: |
+          curl -i -H "Authorization: Bearer $API_KEY" ${{ steps.heroku_env.outputs.url }}/mcp/
           echo "APP_NAME = $APP_NAME"
           echo "MCP_SERVER_URL = $MCP_SERVER_URL"
           echo "REMOTE_SERVER_TYPE = $REMOTE_SERVER_TYPE"
@@ -109,4 +110,4 @@ jobs:
       - name: Destroy Heroku app after test
         if: always()
         run: |
-          heroku apps:destroy --app $APP_NAME --confirm $APP_NAME
+          heroku apps:destroy --app $APP_NAME --confirm $APP_NAME mm
