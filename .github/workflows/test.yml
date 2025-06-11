@@ -93,17 +93,17 @@ jobs:
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
       - name: Run pytest against deployed app
-        env:
-          APP_NAME: ${{ env.APP_NAME }}
-          MCP_SERVER_URL: ${{ steps.heroku_env.outputs.url }}
-          REMOTE_SERVER_TYPE: ${{ env.REMOTE_SERVER_TYPE }}
-          API_KEY: ${{ env.API_KEY }}
+        # env:
+        #   APP_NAME: ${{ env.APP_NAME }}
+        #   MCP_SERVER_URL: ${{ steps.heroku_env.outputs.url }}
+        #   REMOTE_SERVER_TYPE: ${{ env.REMOTE_SERVER_TYPE }}
+        #   API_KEY: ${{ env.API_KEY }}
         run: |
           echo "APP_NAME = $APP_NAME"
           echo "MCP_SERVER_URL = $MCP_SERVER_URL"
           echo "REMOTE_SERVER_TYPE = $REMOTE_SERVER_TYPE"
           echo "API_KEY is ${API_KEY:+set}"  # won't print the key, just confirms it's non-empty
-          pytest -q
+          MCP_SERVER_URL=${{ steps.heroku_env.outputs.url }} API_KEY=${API_KEY} REMOTE_SERVER_TYPE=${REMOTE_SERVER_TYPE} pytest -q
 
 
       - name: Destroy Heroku app after test
