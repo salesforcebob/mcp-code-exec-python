@@ -58,6 +58,8 @@ jobs:
         run: |
           echo "$HEROKU_API_KEY" | heroku auth:token
 
+      # github CI can't use our app.json, so the config etc bits must be set manually.
+      # note WEB_CONCURRENCY is important! You get non-deterministic errors w/out it.
       - name: Create temp Heroku app for this PR
         run: |
           heroku create $APP_NAME
@@ -85,10 +87,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      # sometimes this is totally uneccessary, and other times servers fail w/out this...
-      - name: Wait briefly for MCP server to fully boot
-        run: sleep 3
 
       - name: Get Heroku env vars
         id: heroku_env
