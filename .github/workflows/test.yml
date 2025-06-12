@@ -99,7 +99,6 @@ jobs:
         #   REMOTE_SERVER_TYPE: ${{ env.REMOTE_SERVER_TYPE }}
         #   API_KEY: ${{ env.API_KEY }}
         run: |
-          curl -i -H "Authorization: Bearer $API_KEY" ${{ steps.heroku_env.outputs.url }}mcp/
           echo "APP_NAME = $APP_NAME"
           echo "MCP_SERVER_URL = ${{ steps.heroku_env.outputs.url }}"
           echo "REMOTE_SERVER_TYPE = $REMOTE_SERVER_TYPE"
