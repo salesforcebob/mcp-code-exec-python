@@ -51,7 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # <-- disables shallow clone, which heroku is upset by?
+          fetch-depth: 0  # <-- disables shallow clone, which heroku is upset by when running git push heroku later on
 
       - uses: actions/setup-python@v5
         with:
