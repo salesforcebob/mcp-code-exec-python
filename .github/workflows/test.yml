@@ -13,12 +13,17 @@ jobs:
       API_KEY: ci-test-key
 
     steps:
-      # Optional: cache wheels to speed up numpy / scipy installs
       - uses: actions/checkout@v4
+
+      - name: Read Python version from .python-version
+        id: python-version
+        run: |
+          PY_VERSION=$(cat .python-version)
+          echo "version=$PY_VERSION" >> $GITHUB_OUTPUT
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ steps.python-version.outputs.version }}
 
       - uses: actions/cache@v4
         with:
@@ -64,9 +69,15 @@ jobs:
           echo "APP_NAME=$APP_NAME"
           echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 
+      - name: Read Python version from .python-version
+        id: python-version
+        run: |
+          PY_VERSION=$(cat .python-version)
+          echo "version=$PY_VERSION" >> $GITHUB_OUTPUT
+
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12" # this should align with this repo's .python-version file
+          python-version: ${{ steps.python-version.outputs.version }}
 
       - name: Install Heroku CLI
         run: |
