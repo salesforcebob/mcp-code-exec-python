@@ -58,7 +58,9 @@ jobs:
         id: appname
         run: |
           OWNER_SHORT=${GITHUB_REPOSITORY_OWNER:0:5}
-          APP_NAME="${OWNER_SHORT}-${GITHUB_REPOSITORY}-${GITHUB_EVENT_NUMBER}"
+          REPO_NAME=$(basename "$GITHUB_REPOSITORY")
+          PR_NUMBER=$(jq .number "$GITHUB_EVENT_PATH")
+          APP_NAME="${OWNER_SHORT}-${REPO_NAME}-${PR_NUMBER}"
           echo "APP_NAME=$APP_NAME"
           echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
 
