@@ -102,6 +102,8 @@ jobs:
           echo "REMOTE_SERVER_TYPE = $REMOTE_SERVER_TYPE"
           echo "API_KEY is ${API_KEY:+set}"  # won't print the key, just confirms it's non-empty
           pytest -q
+          pytest -q
+          pytest -q
 
 
       - name: Destroy Heroku app after test
