@@ -102,8 +102,27 @@ jobs:
           echo "REMOTE_SERVER_TYPE = $REMOTE_SERVER_TYPE"
           echo "API_KEY is ${API_KEY:+set}"  # won't print the key, just confirms it's non-empty
           pytest -q
+
+      - name: Run pytest against deployed app 2
+        env:
+            MCP_SERVER_URL: ${{ steps.heroku_env.outputs.url }}
+        run: |
+          echo "APP_NAME = $APP_NAME"
+          echo "MCP_SERVER_URL = $MCP_SERVER_URL"
+          echo "REMOTE_SERVER_TYPE = $REMOTE_SERVER_TYPE"
+          echo "API_KEY is ${API_KEY:+set}"  # won't print the key, just confirms it's non-empty
           pytest -q
+
+      - name: Run pytest against deployed app 3
+        env:
+            MCP_SERVER_URL: ${{ steps.heroku_env.outputs.url }}
+        run: |
+          echo "APP_NAME = $APP_NAME"
+          echo "MCP_SERVER_URL = $MCP_SERVER_URL"
+          echo "REMOTE_SERVER_TYPE = $REMOTE_SERVER_TYPE"
+          echo "API_KEY is ${API_KEY:+set}"  # won't print the key, just confirms it's non-empty
           pytest -q
+
 
 
       - name: Destroy Heroku app after test
