@@ -61,8 +61,12 @@ jobs:
       - name: Create temp Heroku app for this PR
         run: |
           heroku create $APP_NAME
+          heroku buildpacks:set heroku/python -a $APP_NAME
           heroku config:set API_KEY=$API_KEY --app $APP_NAME
+          heroku config:set STDIO_MODE_ONLY=false
           heroku config:set REMOTE_SERVER_TYPE=$REMOTE_SERVER_TYPE --app $APP_NAME
+          heroku config:set WEB_CONCURRENCY=1 --app $APP_NAME
+          heroku ps:scale web=1 -a $APP_NAME
 
       - name: Deploy this branch to Heroku
         run: |
