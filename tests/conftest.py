@@ -75,12 +75,12 @@ async def _ctx_stdio_local() -> AsyncGenerator[Dict, None]:
 async def _ctx_remote() -> AsyncGenerator[Dict, None]:
     url = os.getenv("MCP_SERVER_URL")
     key = os.getenv("API_KEY")
-    server_type = os.getenv("REMOTE_SERVER_TYPE")
+    server_type = os.getenv("REMOTE_SERVER_TRANSPORT_MODULE")
 
     if not url or not key:
         pytest.skip("remote env-vars missing")
     yield {"client": server_type.replace("server", "client"),
-           "extra_env": {"API_KEY": key, "MCP_SERVER_URL": url, "REMOTE_SERVER_TYPE": server_type}}
+           "extra_env": {"API_KEY": key, "MCP_SERVER_URL": url, "REMOTE_SERVER_TRANSPORT_MODULE": server_type}}
 
 # ---------------------------------------------------------------- remote STDIO ctx
 async def _ctx_remote_stdio() -> AsyncGenerator[Dict, None]:

@@ -43,7 +43,7 @@ jobs:
       # TODO: make this into a github secret, just in case
       API_KEY: ci-test-key
       APP_NAME: mcp-toolkit-pr-${{ github.event.number }}
-      REMOTE_SERVER_TYPE: streamable_http_server
+      REMOTE_SERVER_TRANSPORT_MODULE: streamable_http_server
 
     steps:
       - uses: actions/checkout@v4
@@ -64,9 +64,8 @@ jobs:
           heroku buildpacks:set heroku/python -a $APP_NAME
           heroku config:set API_KEY=$API_KEY --app $APP_NAME
           heroku config:set STDIO_MODE_ONLY=false
-          heroku config:set REMOTE_SERVER_TYPE=$REMOTE_SERVER_TYPE --app $APP_NAME
+          heroku config:set REMOTE_SERVER_TRANSPORT_MODULE=$REMOTE_SERVER_TRANSPORT_MODULE --app $APP_NAME
           heroku config:set WEB_CONCURRENCY=1 --app $APP_NAME
-          heroku ps:scale web=1 -a $APP_NAME
 
       - name: Deploy this branch to Heroku
         run: |
@@ -103,7 +102,7 @@ jobs:
         run: |
           echo "APP_NAME = $APP_NAME"
           echo "MCP_SERVER_URL = $MCP_SERVER_URL"
-          echo "REMOTE_SERVER_TYPE = $REMOTE_SERVER_TYPE"
+          echo "REMOTE_SERVER_TRANSPORT_MODULE = $REMOTE_SERVER_TRANSPORT_MODULE"
           echo "API_KEY is ${API_KEY:+set}"  # won't print the key, just confirms it's non-empty
           pytest -q
 
