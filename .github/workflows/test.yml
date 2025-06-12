@@ -40,9 +40,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-      # TODO: make this into a github secret, just in case
       API_KEY: ci-test-key
       APP_NAME: mcp-toolkit-pr-${{ github.event.number }}
+      # also note that github CI doesn't have access to your app's config vars, so here we're setting the remote
+      # server type to streamable HTTP. Folks using SSE would need to change this line for their e2e remote integration
+      # tests to test SSE instead of streamable HTTP.
       REMOTE_SERVER_TRANSPORT_MODULE: streamable_http_server
 
     steps:
