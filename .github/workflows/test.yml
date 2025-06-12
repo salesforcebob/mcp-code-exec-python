@@ -53,6 +53,10 @@ jobs:
         with:
           fetch-depth: 0  # <-- disables shallow clone, which heroku is upset by?
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12" # this should align with this repo's .python-version file
+
       - name: Install Heroku CLI
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
@@ -80,11 +84,6 @@ jobs:
       - name: Deploy this branch to Heroku
         run: |
           git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$APP_NAME.git HEAD:refs/heads/main --force
-
-      - uses: actions/setup-python@v5
-        with:
-          # should align with .python-version
-          python-version: "3.12"
 
       - uses: actions/cache@v4
         with:
