@@ -34,7 +34,7 @@ jobs:
         run: pytest -q
 
   ###########################################################################
-  # 2 - Deploy this PR to a temp Heroku app and run remote tests
+  # 2 - Deploy this PR to a temp Heroku app and run tests against deployed app (in addition to 'local')
   ###########################################################################
   remote:
     runs-on: ubuntu-latest
