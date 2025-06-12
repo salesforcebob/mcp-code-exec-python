@@ -60,6 +60,11 @@ jobs:
         run: |
           echo "$HEROKU_API_KEY" | heroku auth:token
 
+      - name: Pre-cleanup (destroy app if it exists)
+        continue-on-error: true
+        run: |
+          heroku apps:destroy --app $APP_NAME --confirm $APP_NAME
+
       # github CI can't use our app.json, so the config etc bits must be set manually.
       # note WEB_CONCURRENCY is important! You get non-deterministic errors w/out it.
       - name: Create temp Heroku app for this PR
